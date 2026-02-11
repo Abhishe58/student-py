@@ -4,6 +4,8 @@ import pandas as pd
 import joblib
 from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI(title="Phone Addiction Predictor")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # later restrict to your frontend
@@ -16,7 +18,7 @@ app.add_middleware(
 model = joblib.load("xcod.pkl")
 features = joblib.load("model_features.pkl")
 
-app = FastAPI(title="Phone Addiction Predictor")
+
 
 class UserInput(BaseModel):
     Age: int
@@ -68,4 +70,5 @@ def predict(data: UserInput):
         "addiction_score": round(score, 2),
         "addiction_level": label
     }
+
 
