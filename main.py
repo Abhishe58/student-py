@@ -2,6 +2,15 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
 import joblib
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # later restrict to your frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Load model once
 model = joblib.load("xcod.pkl")
@@ -40,6 +49,14 @@ def addiction_label(score: float):
     else:
         return "High"
 
+@app.get("/")
+def root():
+    return {
+        "status": "Backend running 🚀",
+        "docs": "/docs",
+        "predict": "/predict"
+    }
+
 @app.post("/predict")
 def predict(data: UserInput):
     df = pd.DataFrame([[getattr(data, f) for f in features]], columns=features)
@@ -51,3 +68,4 @@ def predict(data: UserInput):
         "addiction_score": round(score, 2),
         "addiction_level": label
     }
+
